@@ -1,6 +1,9 @@
-from discord import Bot, ApplicationContext, Message, Embed, Colour, Intents
+from discord import Bot, ApplicationContext, Message, Embed, Colour, Intents, Emoji
 from discord.commands import Option
+from random import choice
 from yarl import URL
+
+import re
 
 from search import Searcher
 from config import config, DEBUG
@@ -41,7 +44,7 @@ async def get_search_embed(query: str):
     embed = Embed(
         title=config("search.report.title"),
         description="\n".join(results),
-        color=Colour.blurple()
+        color=Colour(0xb37553)
     )
 
     return embed
@@ -71,6 +74,7 @@ async def handle_text_searc(message: Message):
     
     if message.content.startswith("? "):
         query = message.content[2:]
+        logger.info(f"Выполняю ? команду поиска по фразе \"{query}\" от пользователя {message.author}")
         embed = await get_search_embed(query)
 
         if embed:
@@ -78,6 +82,14 @@ async def handle_text_searc(message: Message):
         else:
             error_message = config("search.report.error_message")
             await message.reply(error_message, mention_author=False)
+
+@bot.listen("on_message")
+async def handle_gratitude(message: Message):
+    if message.author == bot.user:
+        return
+    
+    if re.search(config("gratitudes.match"), message.content):
+        await message.add_reaction(choice(config("gratitudes.reactions")))
 
 @bot.slash_command(
         name=config("commands.search.name"),
@@ -93,6 +105,7 @@ async def cmd_search(
         required=True) # type: ignore
     ):
     
+    logger.info(f"Выполняю слеш-команду поиска по фразе \"{query}\" от пользователя {ctx.author}")
     embed = await get_search_embed(query)
 
     if embed:
