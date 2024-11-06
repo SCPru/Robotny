@@ -1,0 +1,28 @@
+name: Robotny.aic
+version: 1.0.0
+logs_dir: logs/
+site: scpfoundation.net
+
+commands:
+  search:
+    name: search
+    description: 
+      default: Search in SCPFoundation database
+      localizations:
+        ru: Поиск по базе данных SCPFoundation
+    arguments:
+      query:
+        description: 
+          default: Search query
+          localizations:
+            ru: Поисковой запрос
+
+search:
+  report:
+    title: Вот, что мне удалось найти
+    error_message: Я обыскал всё вдоль и поперек, но ничего так и не нашел
+  stuck_messages:
+   - Ты меня за дурака держишь?)
+   - И что я должен с этим делать?
+   - Да ну, а дальше что было?
+   - 
