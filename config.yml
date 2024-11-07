@@ -19,6 +19,7 @@ commands:
 
 search:
   lang: ru
+  timeout: 3
   report:
     title: Вот, что мне удалось найти
     error_message: Я обыскал всё вдоль и поперек, но ничего так и не нашел

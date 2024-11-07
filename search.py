@@ -34,22 +34,27 @@ class Searcher:
     async def stop_client(self):
         await self._session.close()
 
-    async def search(self, query: str, offset: int=0, num_results: int=10, lang: str="ru"):
-        resp = await self._session.get(
-            url="https://www.google.com/search",
-            headers={
-                # "User-Agent": _user_agent_rotator.get_random_user_agent()
-                "User-Agent": choice(_magic_useragents)
-            },
-            params={
-                "q": query,
-                "num": num_results,
-                "hl": lang,
-                "start": offset,
-                "safe": "active",
-            },
-        )
-        resp.raise_for_status()
+    async def search(self, query: str, offset: int=0, num_results: int=10, lang: str="ru", timeout=10):
+        try:
+            resp = await self._session.get(
+                url="https://www.google.com/search",
+                headers={
+                    # "User-Agent": _user_agent_rotator.get_random_user_agent()
+                    "User-Agent": choice(_magic_useragents)
+                },
+                params={
+                    "q": query,
+                    "num": num_results,
+                    "hl": lang,
+                    "start": offset,
+                    "safe": "active",
+                },
+                timeout=timeout,
+            )
+            resp.raise_for_status()
+        except TimeoutError:
+            self._logger.info(f"Таймаут запрпоса \"{query}\", параметры: offset={offset}, num_results={num_results}, lang={lang}, timeout={timeout}")
+            return None
 
         html = await resp.text()
 

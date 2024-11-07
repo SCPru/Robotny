@@ -18,7 +18,8 @@ logger = get_logger(config("logs_dir"), DEBUG)
 async def get_search_embed(query: str):
     search_results = await searcher.search(
         query=f"site:{config("site")} {query}",
-        lang=config("search.lang")
+        lang=config("search.lang"),
+        timeout=config("search.timeout")
     )
 
     if not search_results:
