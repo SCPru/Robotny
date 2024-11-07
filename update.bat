@@ -1,2 +1,2 @@
 @echo off
-docker compose up -d --no-deps --build robotny
+docker compose up -d --no-deps --build bot
