@@ -1,4 +1,4 @@
-from discord import Bot, ApplicationContext, Message, Embed, Colour, Intents, Emoji
+from discord import Bot, ApplicationContext, Message, Embed, Colour, Intents
 from discord.commands import Option
 from random import choice
 from yarl import URL
@@ -44,7 +44,7 @@ async def get_search_embed(query: str):
     embed = Embed(
         title=config("search.report.title"),
         description="\n".join(results),
-        color=Colour(0xb37553)
+        color=Colour(config("search.report.embed_color"))
     )
 
     return embed
