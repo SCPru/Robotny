@@ -3,6 +3,8 @@ from random_user_agent.user_agent import UserAgent
 from bs4 import BeautifulSoup
 from random import choice
 
+import logging
+
 software_names = ["firefox"]
 operating_systems = ["windows", "linux"]
 
@@ -24,6 +26,7 @@ _magic_useragents = [
 class Searcher:
     def __init__(self):
         self._session: ClientSession = None
+        self._logger = logging.getLogger()
 
     async def start_client(self):
         self._session = ClientSession()
@@ -58,6 +61,8 @@ class Searcher:
             link = result.find("a", href=True)
             title = result.find("h3")
             results.append((title.text, link["href"]))
+
+        self._logger.info(f"Получил ответ на запрос \"{query}\", код ответа {resp.status}, длина ответа {len(html)}, блок с результатами {"найден" if result_block else "не найден"}, всего результатов {len(results)}")
 
         return results
 
