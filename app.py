@@ -75,7 +75,7 @@ async def on_ready():
     logger.info(f"{config("name")} v{config("version")} готов к работе")
 
 @bot.listen("on_message")
-async def handle_text_searc(message: Message):
+async def handle_text_search(message: Message):
     if message.author == bot.user:
         return
     
@@ -99,7 +99,7 @@ async def handle_gratitude(message: Message):
         await message.add_reaction(choice(config("gratitudes.reactions")))
 
 @bot.slash_command(
-        name=config("commands.search.name"),
+        name="search",
         description=config("commands.search.description.default"),
         description_localizations=config("commands.search.description.localizations")
 )

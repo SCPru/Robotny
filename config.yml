@@ -5,7 +5,6 @@ site: scpfoundation.net
 
 commands:
   search:
-    name: search
     description: 
       default: Search in SCPFoundation database
       localizations:
