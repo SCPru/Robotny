@@ -1,7 +1,5 @@
 services:
   bot:
     build: .
-    volumes:
-      - "./logs:/app/logs"
     env_file:
       - prod.env

@@ -20,6 +20,7 @@ commands:
 search:
   lang: ru
   timeout: 3
+  engine_id: 53cb25b3bc1374c12 # cx google search id
   report:
     title: Вот, что мне удалось найти
     error_message: Я обыскал всё вдоль и поперек, но ничего так и не нашел

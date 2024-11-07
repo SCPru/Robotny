@@ -6,12 +6,15 @@ from yarl import URL
 import re
 
 from search import Searcher
-from config import config, DEBUG
+from config import config, DEBUG, GOOGLE_SEARCH_API_KEYS
 from logger import get_logger
 
 intents = Intents.all()
 bot = Bot(intents=intents)
-searcher = Searcher()
+searcher = Searcher(
+    api_keys=GOOGLE_SEARCH_API_KEYS,
+    engine_id=config("search.engine_id")
+)
 
 logger = get_logger(config("logs_dir"), DEBUG)
 

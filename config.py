@@ -8,6 +8,7 @@ load_dotenv()
 
 CONFIG_PATH = getenv("CONFIG_PATH", "config.yml")
 TOKEN = getenv("DISCORD_TOKEN")
+GOOGLE_SEARCH_API_KEYS = getenv("GOOGLE_SEARCH_API_KEYS").split(";")
 DEBUG = bool(loads(getenv("DEBUG", "false")))
 
 with open(CONFIG_PATH, "r", encoding="utf-8") as file:
