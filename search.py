@@ -62,7 +62,7 @@ class Searcher:
             title = result.find("h3")
             results.append((title.text, link["href"]))
 
-        self._logger.info(f"Получил ответ на запрос \"{query}\", код ответа {resp.status}, длина ответа {len(html)}, блок с результатами {"найден" if result_block else "не найден"}, всего результатов {len(results)}")
+        self._logger.info(f"Получил ответ на запрос \"{resp.url.path_qs}\", статус: {resp.status}, длина ответа: {len(html)}, блок с результатами {"найден" if result_block else "не найден"}, всего результатов: {len(results)}")
 
         return results
 
