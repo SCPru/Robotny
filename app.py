@@ -18,7 +18,7 @@ searcher = Searcher(
 
 logger = get_logger(config("logs_dir"), DEBUG)
 
-async def get_search_embed(query: str, page: int=0):
+async def get_search_embed(query: str, page: int=1):
     search_results = await searcher.search(
         query=f"site:{config("site")} {query}",
         offset=(page-1)*10,
