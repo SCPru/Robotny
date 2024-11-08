@@ -134,6 +134,7 @@ async def cmd_search(
 @guild_only()
 @default_permissions(manage_messages=True)
 async def cmd_drug_fox(ctx: ApplicationContext):
+    logger.info(f"/fox от {ctx.author}")
     await ctx.respond("👌.", ephemeral=True)
     await ctx.delete()
     await ctx.send("<:drug_fox:1304246546644209695>")
@@ -142,6 +143,7 @@ async def cmd_drug_fox(ctx: ApplicationContext):
 @guild_only()
 @default_permissions(manage_messages=True)
 async def cmd_drug_fox(ctx: ApplicationContext, msg: str, reply_to: Message=None, mention: bool=False):
+    logger.info(f"/say \"{msg}\" от {ctx.author}")
     await ctx.respond("👌.", ephemeral=True)
     await ctx.delete()
     await ctx.send(msg, reference=reply_to, mention_author=mention)
