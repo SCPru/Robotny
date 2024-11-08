@@ -19,6 +19,7 @@ class Searcher:
         await self._session.close()
 
     async def search(self, query: str, offset: int=0, num_results: int=10, lang: str="ru", timeout=10):
+        self._logger.info(f"Ищу \"{query}\", параметры: offset={offset}, num_results={num_results}, lang={lang}, timeout={timeout}")
         try:
             resp = await self._session.get(
                 url="https://www.googleapis.com/customsearch/v1",

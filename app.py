@@ -1,4 +1,4 @@
-from discord import Bot, ApplicationContext, Message, Embed, Colour, Intents
+from discord import Bot, ApplicationContext, Message, Embed, Colour, Intents, Message, default_permissions, guild_only
 from discord.commands import Option
 from random import choice
 from yarl import URL
@@ -18,9 +18,10 @@ searcher = Searcher(
 
 logger = get_logger(config("logs_dir"), DEBUG)
 
-async def get_search_embed(query: str):
+async def get_search_embed(query: str, page: int=0):
     search_results = await searcher.search(
         query=f"site:{config("site")} {query}",
+        offset=(page-1)*10,
         lang=config("search.lang"),
         timeout=config("search.timeout")
     )
@@ -45,6 +46,7 @@ async def get_search_embed(query: str):
         for prefix, condition in prefixes.items():
             if condition:
                 result = f"{prefix}{result}"
+                break
 
         results.append(result)
 
@@ -99,24 +101,47 @@ async def handle_gratitude(message: Message):
         await message.add_reaction(choice(config("gratitudes.reactions")))
 
 @bot.slash_command(
-        name="search",
-        description=config("commands.search.description.default"),
-        description_localizations=config("commands.search.description.localizations")
+    name="search",
+    description=config("commands.search.description.default"),
+    description_localizations=config("commands.search.description.localizations")
 )
 async def cmd_search(
     ctx: ApplicationContext, 
-    query: Option(
+    query = Option(
         str, 
         description=config("commands.search.arguments.query.description.default"),
         description_localizations=config("commands.search.arguments.query.description.localizations"),
-        required=True) # type: ignore
+        required=True),
+    page = Option(
+        int,
+        default=1,
+        min_value=1,
+        max_value=10,
+        required=False)
     ):
     
     logger.info(f"Выполняю слеш-команду поиска по фразе \"{query}\" от пользователя {ctx.author}")
-    embed = await get_search_embed(query)
+    await ctx.defer()
+    embed = await get_search_embed(query, page)
 
     if embed:
         await ctx.respond(embed=embed)
     else:
         error_message = config("search.report.error_message")
         await ctx.respond(error_message)
+
+@bot.slash_command(name="fox")
+@guild_only()
+@default_permissions(manage_messages=True)
+async def cmd_drug_fox(ctx: ApplicationContext):
+    await ctx.respond("👌.", ephemeral=True)
+    await ctx.delete()
+    await ctx.send("<:drug_fox:1304246546644209695>")
+
+@bot.slash_command(name="say")
+@guild_only()
+@default_permissions(manage_messages=True)
+async def cmd_drug_fox(ctx: ApplicationContext, msg: str, reply_to: Message=None, mention: bool=False):
+    await ctx.respond("👌.", ephemeral=True)
+    await ctx.delete()
+    await ctx.send(msg, reference=reply_to, mention_author=mention)
