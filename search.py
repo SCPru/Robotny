@@ -40,6 +40,9 @@ class Searcher:
 
         data = await resp.json()
 
+        if data["searchInformation"]["totalResults"] == '0':
+            return None
+
         results = [(result["title"], result["link"]) for result in data["items"]]
 
         self._logger.info(f"Получил ответ на запрос \"{query}\", язык: {lang}, диапазон: {offset}-{offset+num_results}, статус: {resp.status}, всего результатов: {len(results)}")

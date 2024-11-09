@@ -121,7 +121,6 @@ async def cmd_search(
     ):
     
     logger.info(f"Выполняю слеш-команду поиска по фразе \"{query}\" от пользователя {ctx.author}")
-    await ctx.defer()
     embed = await get_search_embed(query, page)
 
     if embed:
