@@ -1,3 +1,3 @@
 #!/bin/sh
 
-docker compose up -f docker/docker-compose.yml -d --build
+docker compose up -d --no-deps --build bot
