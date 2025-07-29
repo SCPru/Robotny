@@ -1,14 +1,14 @@
 name: Robotny.aic
-version: 1.0.0
+version: 1.1.0
 logs_dir: logs/
 site: scpfoundation.net
 
 commands:
   search:
     description: 
-      default: Search in SCPFoundation database
+      default: Search in SCP Foundation database
       localizations:
-        ru: Поиск по базе данных SCPFoundation
+        ru: Поиск по базе данных SCP Foundation
     arguments:
       query:
         description: 
@@ -41,3 +41,11 @@ gratitudes:
     - 🦊 # :fox:
     - ❤️‍🔥 # :heart_on_fire:
     - 🤝 # :handshake:
+
+roles:
+  newkek: 1399432447778881577
+
+punctuassery:
+  reason: Учись общаться нормально
+  match: |
+    [.,:;\-+'"]+
