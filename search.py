@@ -1,6 +1,6 @@
 from typing import List
 
-from aiohttp import ClientSession
+from aiohttp import ClientResponseError, ClientSession
 from random import choice
 
 import logging
@@ -18,34 +18,43 @@ class Searcher:
     async def stop_client(self):
         await self._session.close()
 
-    async def search(self, query: str, offset: int=0, num_results: int=10, lang: str="ru", timeout=10):
-        self._logger.info(f"Ищу \"{query}\", параметры: offset={offset}, num_results={num_results}, lang={lang}, timeout={timeout}")
+    async def search(self, query: str, offset: int=0, num_results: int=10, lang: str='ru', timeout=10, broken_keys: set=set()):
+        if not broken_keys:
+            self._logger.info(f'Ищу \'{query}\', параметры: offset={offset}, num_results={num_results}, lang={lang}, timeout={timeout}')
+        avaliable_keys = list(set(self._keys).difference(broken_keys))
+        if not avaliable_keys:
+            logging.error(f'Нет ни одного доступного ключа, возможно исчерпан лимит запросов')
+            return None
+        key = choice(avaliable_keys)
         try:
             resp = await self._session.get(
-                url="https://www.googleapis.com/customsearch/v1",
+                url='https://www.googleapis.com/customsearch/v1',
                 params={
-                    "q": query,
-                    "num": num_results,
-                    "hl": lang,
-                    "start": offset,
-                    "key": choice(self._keys),
-                    "cx": self._engine_id
+                    'q': query,
+                    'num': num_results,
+                    'hl': lang,
+                    'start': offset,
+                    'key': key,
+                    'cx': self._engine_id
                 },
                 timeout=timeout,
             )
             resp.raise_for_status()
         except TimeoutError:
-            self._logger.info(f"Таймаут запрпоса \"{query}\", параметры: offset={offset}, num_results={num_results}, lang={lang}, timeout={timeout}")
+            self._logger.error(f'Таймаут запрпоса \'{query}\', параметры: offset={offset}, num_results={num_results}, lang={lang}, timeout={timeout}')
             return None
+        except ClientResponseError:
+            broken_keys.add(key)
+            return await self.search(query, offset, num_results, lang, timeout, broken_keys)
 
         data = await resp.json()
 
-        if data["searchInformation"]["totalResults"] == '0':
+        if data['searchInformation']['totalResults'] == '0':
             return None
 
-        results = [(result["title"], result["link"]) for result in data["items"]]
+        results = [(result['title'], result['link']) for result in data['items']]
 
-        self._logger.info(f"Получил ответ на запрос \"{query}\", язык: {lang}, диапазон: {offset}-{offset+num_results}, статус: {resp.status}, всего результатов: {len(results)}")
+        self._logger.info(f'Получил ответ на запрос \'{query}\', язык: {lang}, диапазон: {offset}-{offset+num_results}, статус: {resp.status}, всего результатов: {len(results)}')
 
         return results
 

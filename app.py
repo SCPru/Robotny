@@ -129,7 +129,7 @@ async def handle_gratitude(message: Message):
 
 @bot.listen('on_message')
 async def handle_punctuassery(message: Message):
-    if not message.guild or message.author == bot.user:
+    if not message.author is Member or message.author == bot.user:
         return
     
     newkek_role = message.guild.get_role(int(config('roles.newkek')))
