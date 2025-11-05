@@ -75,6 +75,7 @@ async def get_search_embed(query: str, page: int=1):
 @bot.event
 async def on_connect():
     logger.info(f'Запускаю {config('name')} v{config('version')}')
+    logger.info(f'Загружено ключей google search api: {len(searcher._keys)}')
     await bot.sync_commands()
     await searcher.start_client()
 
