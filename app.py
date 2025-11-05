@@ -22,6 +22,15 @@ logger = get_logger(config('logs_dir'), DEBUG)
 PUNCTUASSERY_PATTERN = re.compile(config('punctuassery.match'))
 
 
+def is_accepted_on_server(server):
+    accepted_servers =  config('servers.accepted', [])
+    if accepted_servers and server in accepted_servers:
+        return True
+    elif server not in config('servers.restricted', []):
+        return True
+    return False
+
+
 async def get_search_embed(query: str, page: int=1):
     search_results = await searcher.search(
         query=query,
@@ -119,7 +128,7 @@ async def handle_gratitude(message: Message):
 
 @bot.listen('on_message')
 async def handle_punctuassery(message: Message):
-    if message.author == bot.user:
+    if not message.guild or message.author == bot.user:
         return
     
     newkek_role = message.guild.get_role(int(config('roles.newkek')))
