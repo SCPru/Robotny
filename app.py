@@ -186,7 +186,7 @@ async def cmd_drug_fox(ctx: ApplicationContext):
 @bot.slash_command(name='say')
 @guild_only()
 @default_permissions(manage_messages=True)
-async def cmd_drug_fox(ctx: ApplicationContext, msg: str, reply_to: Message=None, mention: bool=False):
+async def cmd_say(ctx: ApplicationContext, msg: str, reply_to: Message=None, mention: bool=False):
     logger.info(f'/say "{msg}" от {ctx.author}')
     await ctx.respond('👌.', ephemeral=True)
     await ctx.delete()
