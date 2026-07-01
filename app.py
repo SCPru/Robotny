@@ -1,4 +1,4 @@
-from discord import Bot, ApplicationContext, Member, Message, Embed, Colour, Intents, Message, Guild, default_permissions, guild_only
+from discord import Bot, ApplicationContext, Member, Message, Embed, Colour, Intents, default_permissions, guild_only
 from discord.commands import Option
 from random import choice
 from yarl import URL
@@ -19,7 +19,7 @@ searcher = Searcher(
 
 logger = get_logger(config('logs_dir'), DEBUG)
 
-PUNCTUASSERY_PATTERN = re.compile(config('punctuassery.match'))
+PUNCTUASSERY_PATTERN = re.compile(config('punctuassery.match').strip())
 
 
 def is_accepted_on_server(server):
@@ -29,6 +29,27 @@ def is_accepted_on_server(server):
     elif server not in config('servers.restricted', []):
         return True
     return False
+
+
+async def get_newkek_role(guild):
+    role_name = str(config('roles.newkek')).strip()
+
+    for role in guild.roles:
+        if role.name == role_name:
+            return role
+
+    try:
+        roles = await guild.fetch_roles()
+    except Exception:
+        logger.exception(f'Не удалось получить роли на сервере {guild.id}')
+        return None
+
+    for role in roles:
+        if role.name == role_name:
+            return role
+
+    logger.error(f'Роль newkek "{role_name}" не найдена на сервере {guild.id}')
+    return None
 
 
 async def get_search_embed(query: str, page: int=1):
@@ -97,7 +118,10 @@ async def on_ready():
 
 @bot.event
 async def on_member_join(member: Member):
-    newkek_role = member.guild.get_role(int(config('roles.newkek')))
+    newkek_role = await get_newkek_role(member.guild)
+    if not newkek_role:
+        return
+
     await member.add_roles(newkek_role)
 
 
@@ -129,14 +153,16 @@ async def handle_gratitude(message: Message):
 
 @bot.listen('on_message')
 async def handle_punctuassery(message: Message):
-    if not message.author is Member or message.author == bot.user:
+    if not isinstance(message.author, Member) or message.author == bot.user or not message.guild:
         return
     
-    newkek_role = message.guild.get_role(int(config('roles.newkek')))
+    newkek_role = await get_newkek_role(message.guild)
+    if not newkek_role:
+        return
 
     if newkek_role in message.author.roles:
         test = message.content.strip().replace('\n', '').replace(' ', '')
-        if re.fullmatch(PUNCTUASSERY_PATTERN, test):
+        if PUNCTUASSERY_PATTERN.fullmatch(test):
             await message.delete(reason=config('punctuassery.reason'))
             logger.info(f'Удаляю срань, которую навалил {message.author}')
         else:
